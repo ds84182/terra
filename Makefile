@@ -7,13 +7,13 @@
 -include Makefile.inc
 
 # Debian packages name llvm-config with a version number - list them here in preference order
-LLVM_CONFIG ?= $(shell which llvm-config-3.5 llvm-config | head -1)
+LLVM_CONFIG ?= $(shell which llvm-config-4.0 llvm-config | head -1)
 #luajit will be downloaded automatically (it's much smaller than llvm)
 #to override this, set LUAJIT_PREFIX to the home of an already installed luajit
 LUAJIT_PREFIX ?= build
 
 # same with clang
-CLANG ?= $(shell which clang-3.5 clang | head -1)
+CLANG ?= $(shell which clang-4.0 clang | head -1)
 
 CXX ?= $(CLANG)++
 CC ?= $(CLANG)
@@ -207,7 +207,7 @@ $(DYNLIBRARY):	$(LIBRARY)
 
 $(EXECUTABLE):	$(addprefix build/, $(EXEOBJS)) $(LIBRARY)
 	mkdir -p release/bin release/lib
-	$(CXX) $(addprefix build/, $(EXEOBJS)) -o $@ $(LFLAGS) $(TERRA_STATIC_LIBRARY)  $(SUPPORT_LIBRARY_FLAGS)
+	$(CXX) $(addprefix build/, $(EXEOBJS)) -o $@ $(LFLAGS) $(TERRA_STATIC_LIBRARY) $(LLVM_LIBRARY_FLAGS) $(SUPPORT_LIBRARY_FLAGS)
 	if [ ! -e terra  ]; then ln -s $(EXECUTABLE) terra; fi;
 
 $(BIN2C):	src/bin2c.c

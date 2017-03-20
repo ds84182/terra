@@ -30,7 +30,8 @@ extern "C" {
 #include "tinline.h"
 #include "llvm/Support/ManagedStatic.h"
 #include "llvm/ExecutionEngine/MCJIT.h"
-#include "llvm/Bitcode/ReaderWriter.h"
+#include "llvm/Bitcode/BitcodeReader.h"
+#include "llvm/Bitcode/BitcodeWriter.h"
 #include "llvm/Support/Atomic.h"
 #include "llvm/Support/FileSystem.h"
 #include "tllvmutil.h"
@@ -2952,12 +2953,12 @@ static int terra_linkllvmimpl(lua_State * L) {
     #if LLVM_VERSION == 36
     ErrorOr<Module *> mm = parseBitcodeFile(mb.get()->getMemBufferRef(),*TT->ctx);
     #elif LLVM_VERSION >= 37
-    ErrorOr<std::unique_ptr<Module>> mm = parseBitcodeFile(mb.get()->getMemBufferRef(),*TT->ctx);
+    Expected<std::unique_ptr<Module>> mm = parseBitcodeFile(mb.get()->getMemBufferRef(),*TT->ctx);
     #else
     ErrorOr<Module *> mm = parseBitcodeFile(mb.get().get(),*TT->ctx);
     #endif
     if(!mm)
-        terra_reporterror(T, "llvm: %s\n", mm.getError().message().c_str());
+        terra_reporterror(T, "llvm: %s\n", toString(mm.takeError()).c_str());
     #if LLVM_VERSION >= 37
     Module * M = mm.get().release();
     #else

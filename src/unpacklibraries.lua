@@ -18,7 +18,7 @@ for line in io.lines() do
     line = line:gsub("[()]"," ")
     local archivepath,objectfile = line:match("(%S+)%s+(%S+)")
     local archivename = archivepath:match("/([^/]*)%.a$")
-    if not exists( ("%s/%s/%s"):format(destination,archivename,objectfile) ) then
+    if archivename and not exists( ("%s/%s/%s"):format(destination,archivename,objectfile) ) then
         exe("mkdir -p %s/%s",destination,archivename) 
         exe("cd %s/%s; ar x %s %s",destination,archivename,archivepath,objectfile)
     end

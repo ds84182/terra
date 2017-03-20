@@ -6,6 +6,7 @@
 
 #if LLVM_VERSION <= 36
 #include "llvm/Target/TargetLibraryInfo.h"
+#include "llvm/Support/MemoryObject.h"
 #else
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #endif
@@ -23,7 +24,6 @@
 #if LLVM_VERSION >= 35
 #include "llvm/MC/MCContext.h"
 #endif
-#include "llvm/Support/MemoryObject.h"
 
 #ifndef _WIN32
 #include <sys/wait.h>
@@ -86,6 +86,7 @@ void llvmutil_addoptimizationpasses(PassManagerBase * fpm) {
     PMB.populateModulePassManager(W);
 }
 
+#if LLVM_VERSION <= 36
 struct SimpleMemoryObject : public MemoryObject {
   uint64_t getBase() const { return 0; }
   uint64_t getExtent() const { return ~0ULL; }
@@ -94,6 +95,7 @@ struct SimpleMemoryObject : public MemoryObject {
     return 0;
   }
 };
+#endif
 
 void llvmutil_disassemblefunction(void * data, size_t numBytes, size_t numInst) {
     InitializeNativeTargetDisassembler();

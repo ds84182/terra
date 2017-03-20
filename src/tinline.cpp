@@ -77,7 +77,7 @@ void ManualInliner::run(std::vector<Function *>::iterator fbegin, std::vector<Fu
 #else
     CallGraphSCC SCC(*CG,NULL);
 #endif
-    SCC.initialize(&nodes[0], &nodes[0]+nodes.size());
+    SCC.initialize(ArrayRef<CallGraphNode*>(&nodes[0], &nodes[0]+nodes.size()));
     SI->runOnSCC(SCC);
     //We optimize the function now, which will invalidate the call graph,
     //removing called functions makes sure that further inlining passes don't attempt to add invalid callsites as inlining candidates

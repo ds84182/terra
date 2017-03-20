@@ -613,11 +613,13 @@ public:
 #endif
 };
 
-static llvm::sys::TimeValue ZeroTime() {
+using TimeValue = llvm::sys::TimePoint<>;
+
+static TimeValue ZeroTime() {
 #if LLVM_VERSION >= 36
-    return llvm::sys::TimeValue::ZeroTime();
+    return TimeValue();
 #else   
-    return llvm::sys::TimeValue::ZeroTime;
+    return TimeValue();
 #endif
 }
 
