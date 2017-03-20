@@ -1257,6 +1257,7 @@ struct FunctionEmitter {
                     CU->tooptimize->push_back(fstate);
                 }
                 emitBody();
+                fstate->func->setLinkage(GlobalValue::LinkageTypes::InternalLinkage);
                 if(CU->optimize && fstate->lowlink == fstate->index) { //this is the end of a strongly connect component run optimizations on it
                     VERBOSE_ONLY(T) {
                         printf("optimizing scc containing: ");
@@ -2585,6 +2586,7 @@ static int terra_compilationunitaddvalue(lua_State * L) { //entry point into com
             if(GlobalValue * gv2 = CU->M->getNamedValue(modulename))
                 gv2->setName(Twine(StringRef(modulename),"_renamed")); //rename anything else that has this name
             gv->setName(modulename); //and set our function to this name
+            gv->setLinkage(GlobalValue::LinkageTypes::ExternalLinkage);
             assert(gv->getName() == modulename); //make sure it worked
         }
         //cleanup -- ensure we left the stack the way we started
