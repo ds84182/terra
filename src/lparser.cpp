@@ -42,7 +42,7 @@ static void dump_stack(lua_State * L, int elem);
         (x); \
         int end = lua_gettop(ls->L); \
         if(begin + n != end) { \
-            fprintf(stderr,"%s:%d: unmatched return\n",__FILE__,__LINE__); \
+            fprintf(stderr,"%s:%d: unmatched return (begin: %d; end: %d; expected: %d)\n",__FILE__,__LINE__,begin,end,begin+n); \
             luaX_syntaxerror(ls,"error"); \
         } \
     } else { \
@@ -1073,7 +1073,11 @@ static void simpleexp (LexState *ls) {
         return;
     }
     case TK_SPECIAL: {
-        languageextension(ls, 0, 0);
+        if (ls->in_terra) {
+          RETURNS_1(luaexpr(ls));
+        } else {
+          languageextension(ls, 0, 0);
+        }
         return;
     }
     case TK_STRUCT: {
@@ -2079,7 +2083,7 @@ static void languageextension(LexState * ls, int isstatement, int islocal) {
     //object on top of stack
     int n = store_value(ls);
     
-    leaveterra(ls);
+    
     
     //patch the thing into place
     
@@ -2099,6 +2103,7 @@ static void languageextension(LexState * ls, int isstatement, int islocal) {
     print_captured_locals(ls,&tc);
     OutputBuffer_printf(&ls->output_buffer,")");
     luaX_patchend(ls,&begin);
+    leaveterra(ls);
     
     assert(lua_gettop(L) == top);
 }
